@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FocusFlow — Pomodoro Timer &amp; Task List</title>
+  <meta name="description" content="FocusFlow is a calm Pomodoro timer and task list that helps you start, stay focused, and finish. Sessions, streaks, and settings are saved in your browser." />
+  <meta name="theme-color" content="#0b0a15" />
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="bg" aria-hidden="true">
+    <span class="bg-glow bg-glow--one"></span>
+    <span class="bg-glow bg-glow--two"></span>
+    <span class="bg-noise"></span>
+  </div>
+
+  <header class="app-header">
+    <a class="logo" href="#main" aria-label="FocusFlow home">
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2"/></svg>
+      </span>
+      <span>FocusFlow</span>
+    </a>
+
+    <div class="header-actions">
+      <span class="today" id="todayLabel"></span>
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch to light theme" aria-pressed="false">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <button class="btn btn--soft btn--sm" id="settingsBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 8a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V2a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V8a1.7 1.7 0 0 0 1.5 1H22a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        <span>Settings</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="app" id="main">
+    <section class="workspace" aria-labelledby="timerTitle">
+      <h1 class="sr-only" id="timerTitle">Pomodoro timer</h1>
+
+      <article class="timer-card">
+        <div class="timer-top">
+          <div class="mode-tabs" role="group" aria-label="Timer mode">
+            <button class="mode-tab is-active" type="button" aria-pressed="true" data-mode="focus">Focus</button>
+            <button class="mode-tab" type="button" aria-pressed="false" data-mode="short">Short break</button>
+            <button class="mode-tab" type="button" aria-pressed="false" data-mode="long">Long break</button>
+          </div>
+          <span class="live-dot" id="liveDot" hidden><i></i>Running</span>
+        </div>
+
+        <div class="active-task" id="activeTask">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+          <p>No task selected <span>Pick one from your list to stay on track.</span></p>
+        </div>
+
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 320 320" aria-hidden="true">
+            <defs>
+              <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="var(--accent)" />
+                <stop offset="100%" stop-color="var(--accent-2)" />
+              </linearGradient>
+            </defs>
+            <circle class="ring-track" cx="160" cy="160" r="138" />
+            <circle class="ring-progress" id="ringProgress" cx="160" cy="160" r="138" />
+          </svg>
+          <div class="ring-center">
+            <p class="ring-mode" id="modeLabel">Focus session</p>
+            <p class="time" id="timeDisplay" role="timer" aria-live="off">25:00</p>
+            <p class="round-label" id="roundLabel">Round 1 of 4</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="icon-btn icon-btn--lg" id="resetBtn" type="button" aria-label="Reset timer" title="Reset (R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+          <button class="btn btn--primary btn--start" id="startBtn" type="button" aria-label="Start timer">
+            <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8V4Z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>
+            <span id="startLabel">Start focus</span>
+          </button>
+          <button class="icon-btn icon-btn--lg" id="skipBtn" type="button" aria-label="Skip to next session" title="Skip session">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4l10 8-10 8V4Z"/><path d="M19 5v14"/></svg>
+          </button>
+        </div>
+
+        <div class="cycle">
+          <div class="cycle-dots" id="cycleDots" aria-hidden="true"></div>
+          <p id="cycleText">Complete 4 focus sessions to earn a long break.</p>
+        </div>
+      </article>
+
+      <aside class="side">
+        <div class="stat-row">
+          <article class="stat">
+            <span class="stat-label">Sessions today</span>
+            <strong id="statSessions">0</strong>
+            <span class="stat-meta">focus sessions</span>
+          </article>
+          <article class="stat">
+            <span class="stat-label">Focus time</span>
+            <strong id="statMinutes">0<span>m</span></strong>
+            <span class="stat-meta">today</span>
+          </article>
+          <article class="stat">
+            <span class="stat-label">Streak</span>
+            <strong id="statStreak">0<span>d</span></strong>
+            <span class="stat-meta">keep it alive</span>
+          </article>
+        </div>
+
+        <article class="tasks-card">
+          <div class="tasks-head">
+            <div>
+              <h2>Today's tasks</h2>
+              <p id="taskSummary">Nothing on your list yet.</p>
+            </div>
+            <span class="task-count" id="taskCount">0</span>
+          </div>
+
+          <form class="add-task" id="addTaskForm">
+            <label class="sr-only" for="taskInput">Add a task</label>
+            <input type="text" id="taskInput" maxlength="90" placeholder="What are you working on?" autocomplete="off" />
+            <button class="btn btn--primary btn--icon" type="submit" aria-label="Add task">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </form>
+
+          <div class="task-progress" aria-hidden="true"><span id="taskProgress"></span></div>
+
+          <ul class="task-list" id="taskList"></ul>
+
+          <div class="tasks-empty" id="tasksEmpty">
+            <span class="tasks-empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+            </span>
+            <p><strong>One task at a time.</strong>Add the first thing you want to finish today.</p>
+          </div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="tips" aria-label="Tips">
+      <div class="tip">
+        <span class="tip-key">Space</span>
+        <p><strong>Start or pause</strong> without leaving the keyboard.</p>
+      </div>
+      <div class="tip">
+        <span class="tip-key">R</span>
+        <p><strong>Reset the clock</strong> when you need a clean start.</p>
+      </div>
+      <div class="tip">
+        <span class="tip-key">100% local</span>
+        <p><strong>Your data stays local.</strong> No account, no cloud, no noise.</p>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>FocusFlow · A calm Pomodoro timer built with vanilla JavaScript.</p>
+      <a href="https://github.com/sphinxss/focusflow" target="_blank" rel="noopener">View source</a>
+    </footer>
+  </main>
+
+  <dialog class="modal" id="settingsModal" aria-labelledby="settingsTitle">
+    <form class="modal-card" id="settingsForm" method="dialog">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">Preferences</p>
+          <h2 id="settingsTitle">Tune your flow</h2>
+        </div>
+        <button class="icon-btn" type="button" id="settingsClose" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="settings-group">
+        <p class="settings-label">Session lengths <span>minutes</span></p>
+        <div class="settings-grid">
+          <label class="field"><span>Focus</span><input type="number" id="focusLength" min="1" max="120" step="1" required /></label>
+          <label class="field"><span>Short break</span><input type="number" id="shortLength" min="1" max="60" step="1" required /></label>
+          <label class="field"><span>Long break</span><input type="number" id="longLength" min="1" max="90" step="1" required /></label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <p class="settings-label">Cycle</p>
+        <label class="field">
+          <span>Long break after how many focus sessions?</span>
+          <input type="number" id="longInterval" min="2" max="10" step="1" required />
+        </label>
+      </div>
+
+      <div class="settings-group settings-group--toggles">
+        <label class="toggle">
+          <span><strong>Auto-start breaks</strong><small>Begin a break as soon as focus ends.</small></span>
+          <input type="checkbox" id="autoBreaks" />
+          <i aria-hidden="true"></i>
+        </label>
+        <label class="toggle">
+          <span><strong>Auto-start focus</strong><small>Jump straight back in after a break.</small></span>
+          <input type="checkbox" id="autoFocus" />
+          <i aria-hidden="true"></i>
+        </label>
+        <label class="toggle">
+          <span><strong>Completion sound</strong><small>Play a soft chime at the end of a session.</small></span>
+          <input type="checkbox" id="soundToggle" />
+          <i aria-hidden="true"></i>
+        </label>
+        <label class="toggle">
+          <span><strong>Browser notifications</strong><small>Get a desktop alert when the timer ends.</small></span>
+          <input type="checkbox" id="notifyToggle" />
+          <i aria-hidden="true"></i>
+        </label>
+      </div>
+
+      <p class="form-note" id="settingsNote" hidden></p>
+
+      <div class="modal-actions">
+        <button class="btn btn--ghost" type="button" id="defaultsBtn">Restore defaults</button>
+        <button class="btn btn--primary" type="submit">Save settings</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
